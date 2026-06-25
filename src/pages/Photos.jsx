@@ -7,7 +7,7 @@ import axios from "axios";
 import "./Form.css";
 import "./Photos.css";
 
-let API = "http://localhost:3000";
+let API = "https://rizzchat-be-pejo.onrender.com";
 
 function Photos(){
   let [files, setFiles] = useState([]);
