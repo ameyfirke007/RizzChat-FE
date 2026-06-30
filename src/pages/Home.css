@@ -86,3 +86,226 @@
 .send-btn:hover {
   transform: scale(1.05);
 }
+
+/* Online Status Bar */
+.online-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #3a3a3a;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.online-status-bar:hover {
+  background: #444;
+}
+
+.online-indicator-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #28a745;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px #28a745;
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+.expand-arrow {
+  margin-left: auto;
+  font-size: 10px;
+  color: #aaa;
+}
+
+/* Online Users Dropdown */
+.online-users-list {
+  background: #2b2b2b;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 5px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.online-user-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.online-dot-small {
+  width: 6px;
+  height: 6px;
+  background-color: #28a745;
+  border-radius: 50%;
+}
+
+.user-email-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Chat bubble container for hover reactions */
+.chat-bubble-container {
+  position: relative;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Emoji reaction picker on hover */
+.emoji-reaction-picker {
+  position: absolute;
+  top: -34px;
+  background: #2b2b2b;
+  border: 1px solid #555;
+  border-radius: 20px;
+  padding: 4px 8px;
+  display: flex;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateY(5px);
+}
+
+.chat-bubble-container:hover .emoji-reaction-picker {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Position reaction picker depending on whether sent or received */
+.chat-row.sent .emoji-reaction-picker {
+  right: 0;
+}
+
+.chat-row.received .emoji-reaction-picker {
+  left: 0;
+}
+
+.emoji-picker-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px;
+  transition: transform 0.1s;
+}
+
+.emoji-picker-btn:hover {
+  transform: scale(1.3);
+}
+
+/* Reactions row under chat bubble */
+.reactions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.reactions-row.sent {
+  justify-content: flex-end;
+}
+
+.reactions-row.received {
+  justify-content: flex-start;
+}
+
+.reaction-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #3e3e3e;
+  border: 1px solid #555;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.reaction-pill:hover {
+  background: #4a4a4a;
+}
+
+.reaction-pill.active {
+  background: #007bff33;
+  border-color: #007bff;
+}
+
+.reaction-count {
+  font-weight: bold;
+  color: #ccc;
+}
+
+/* Typing Indicators */
+.typing-indicator-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid #444;
+}
+
+.typing-text {
+  font-size: 12px;
+  color: #aaa;
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #aaa;
+  border-radius: 50%;
+  animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typing-bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 40% { 
+    transform: scale(1);
+  }
+}

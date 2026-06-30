@@ -2,12 +2,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiMessageCircle } from "react-icons/fi";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import axios from "axios";
 import "./Form.css";
 import "./Photos.css";
 
-let API = "https://rizzchat-be-pejo.onrender.com";
+let API = window.location.hostname === "localhost" 
+  ? "http://localhost:3000" 
+  : "https://rizzchat-be-pejo.onrender.com";
 
 function Photos(){
   let [files, setFiles] = useState([]);
@@ -16,6 +19,11 @@ function Photos(){
   let [uploading, setUploading] = useState(false);
   let [showForm, setShowForm] = useState(false);
   let [email, setEmail] = useState(null);
+  
+  // States for expandable comments and text inputs per snap ID
+  let [expandedComments, setExpandedComments] = useState({});
+  let [commentInputs, setCommentInputs] = useState({});
+  
   let endRef = useRef(null);
 
   let auth = getAuth();
@@ -82,6 +90,63 @@ function Photos(){
       .catch((err)=>alert(err));
   };
 
+  let handleLike = (id) => {
+    axios.put(`${API}/files/${id}/like`, { username: email })
+      .then((res) => {
+        setFiles((prev) => prev.map((item) => {
+          if (item._id === id) {
+            return { ...item, likes: res.data.likes };
+          }
+          return item;
+        }));
+      })
+      .catch((err) => alert(err));
+  };
+
+  let toggleComments = (id) => {
+    setExpandedComments((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  let handleCommentInputChange = (id, text) => {
+    setCommentInputs((prev) => ({
+      ...prev,
+      [id]: text
+    }));
+  };
+
+  let handleAddComment = (id) => {
+    let text = commentInputs[id];
+    if (!text || !text.trim()) return;
+
+    axios.post(`${API}/files/${id}/comment`, { username: email, text: text.trim() })
+      .then((res) => {
+        setFiles((prev) => prev.map((item) => {
+          if (item._id === id) {
+            return { ...item, comments: res.data.comments };
+          }
+          return item;
+        }));
+        setCommentInputs((prev) => ({ ...prev, [id]: "" }));
+      })
+      .catch((err) => alert(err));
+  };
+
+  let handleDeleteComment = (snapId, commentId) => {
+    axios.delete(`${API}/files/${snapId}/comment/${commentId}`)
+      .then((res) => {
+        setFiles((prev) => prev.map((item) => {
+          if (item._id === snapId) {
+            return { ...item, comments: res.data.comments };
+          }
+          return item;
+        }));
+      })
+      .catch((err) => alert(err));
+  };
+
   return (
     <div className="container">
       <div className="form-box">
@@ -100,6 +165,11 @@ function Photos(){
         <div className="post-feed">
           {files.map((item)=>{
             let mine = item.username === email;
+            let liked = item.likes?.includes(email);
+            let likesCount = item.likes?.length || 0;
+            let commentsCount = item.comments?.length || 0;
+            let commentsOpen = !!expandedComments[item._id];
+
             return (
               <div className={`post-row ${mine ? "sent" : "received"}`} key={item._id}>
                 <div className="post-sender">
@@ -113,10 +183,69 @@ function Photos(){
                     </button>
                   )}
                 </div>
+                
                 <div className="post-bubble">
                   <img className="post-image" src={item.file_url} alt={item.caption} />
                   <div className="post-caption">{item.caption}</div>
+                  
+                  {/* Actions Area (Likes & Comments counts) */}
+                  <div className="post-actions">
+                    <button className={`action-btn like-btn ${liked ? "liked" : ""}`} onClick={() => handleLike(item._id)}>
+                      {liked ? <FaHeart /> : <FaRegHeart />}
+                      <span>{likesCount}</span>
+                    </button>
+
+                    <button className={`action-btn comment-btn ${commentsOpen ? "active" : ""}`} onClick={() => toggleComments(item._id)}>
+                      <FiMessageCircle />
+                      <span>{commentsCount}</span>
+                    </button>
+                  </div>
                 </div>
+
+                {/* Collapsible Comments Section */}
+                {commentsOpen && (
+                  <div className="comments-section">
+                    <div className="comments-list">
+                      {item.comments && item.comments.length > 0 ? (
+                        item.comments.map((comment) => {
+                          let isOwnComment = comment.username === email;
+                          return (
+                            <div key={comment._id} className="comment-item">
+                              <div className="comment-header">
+                                <span className="comment-user">{comment.username}</span>
+                                {isOwnComment && (
+                                  <button
+                                    className="comment-delete-btn"
+                                    onClick={() => handleDeleteComment(item._id, comment._id)}
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                              <div className="comment-body">{comment.text}</div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="no-comments">No comments yet. Be the first!</div>
+                      )}
+                    </div>
+                    
+                    <div className="comment-input-row">
+                      <input
+                        type="text"
+                        className="comment-input"
+                        placeholder="Add a comment..."
+                        value={commentInputs[item._id] || ""}
+                        onChange={(e) => handleCommentInputChange(item._id, e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleAddComment(item._id); }}
+                      />
+                      <button className="comment-submit-btn" onClick={() => handleAddComment(item._id)}>
+                        Post
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

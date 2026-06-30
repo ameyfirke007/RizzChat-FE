@@ -1,0 +1,29 @@
+:root {
+  --font-family: 'Inter', sans-serif;
+  --radius: 8px;
+  --transition: 0.3s ease;
+  /* Light theme */
+  --color-bg-light: hsl(210, 30%, 96%);
+  --color-primary-light: hsl(210, 80%, 55%);
+  --color-text-light: hsl(210, 10%, 15%);
+  --color-surface-light: hsl(0, 0%, 100%);
+  /* Dark theme */
+  --color-bg-dark: hsl(210, 30%, 12%);
+  --color-primary-dark: hsl(210, 80%, 65%);
+  --color-text-dark: hsl(0, 0%, 90%);
+  --color-surface-dark: hsl(210, 15%, 20%);
+}
+
+[data-theme='light'] {
+  --color-bg: var(--color-bg-light);
+  --color-primary: var(--color-primary-light);
+  --color-text: var(--color-text-light);
+  --color-surface: var(--color-surface-light);
+}
+
+[data-theme='dark'] {
+  --color-bg: var(--color-bg-dark);
+  --color-primary: var(--color-primary-dark);
+  --color-text: var(--color-text-dark);
+  --color-surface: var(--color-surface-dark);
+}
